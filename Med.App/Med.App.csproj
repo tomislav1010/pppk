@@ -7,11 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.30">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
     <PackageReference Include="Spectre.Console" Version="0.57.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Med.Data.Ef\Med.Data.Ef.csproj" />
     <ProjectReference Include="..\Med.Domain\Med.Domain.csproj" />
     <ProjectReference Include="..\Med.ORM\Med.ORM.csproj" />
   </ItemGroup>
