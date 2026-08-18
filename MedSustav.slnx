@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Med.App/Med.App.csproj" />
+  <Project Path="Med.Domain/Med.Domain.csproj" />
+  <Project Path="Med.ORM/Med.ORM.csproj" />
+</Solution>
