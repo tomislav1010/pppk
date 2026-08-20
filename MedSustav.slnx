@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="Med.App/Med.App.csproj" />
+  <Project Path="Med.App/Med.App.csproj" Id="0603f54d-058d-4de4-bab8-f7539382ae2a" />
   <Project Path="Med.Data.Ef/Med.Data.Ef.csproj" />
   <Project Path="Med.Domain/Med.Domain.csproj" />
   <Project Path="Med.ORM/Med.ORM.csproj" />
