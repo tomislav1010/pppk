@@ -1,29 +1,44 @@
-﻿using Med.App;
-using Med.Data.Ef;
+using Med.App;
+using Med.App.Izbornici;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Spectre.Console;
 
-var config = new ConfigurationBuilder()
-    .SetBasePath(AppContext.BaseDirectory)
-    .AddJsonFile("appsettings.json", optional: false)
-    .AddJsonFile("appsettings.Local.json", optional: true)
-    .Build();
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-var kljuc = config["UseConnection"] ?? "Postgres";
-var connectionString = config.GetConnectionString(kljuc)
-    ?? throw new InvalidOperationException($"Nema connection stringa '{kljuc}'.");
+var config = Baza.UcitajKonfiguraciju();
+Baza.IspisiSql = args.Contains("--sql");
 
-var options = new DbContextOptionsBuilder<MedDbContext>()
-    .UseNpgsql(connectionString)
-    .Options;
+await using var db = Baza.Otvori(config);
 
-await using var db = new MedDbContext(options);
+AnsiConsole.MarkupLine($"[grey]Konfiguracija:[/] {Baza.NazivKonfiguracije(config)}");
 
-Console.WriteLine($"Konfiguracija : {kljuc}");
-Console.WriteLine($"Dostupna baza : {await db.Database.CanConnectAsync()}");
+if (!AnsiConsole.Profile.Capabilities.Interactive)
+{
+    AnsiConsole.MarkupLine("[red]Izbornik trazi interaktivni terminal.[/]");
+    AnsiConsole.MarkupLine("[grey]Pokreni aplikaciju izravno u konzoli, bez preusmjeravanja ulaza.[/]");
+    return 1;
+}
 
-await Seeder.PokreniAsync(db);
+if (!await db.Database.CanConnectAsync())
+{
+    AnsiConsole.MarkupLine("[red]Baza nije dostupna.[/]");
+    AnsiConsole.MarkupLine("[grey]Pokreni kontejner: docker compose up -d postgres[/]");
+    return 1;
+}
 
-Console.WriteLine("\nLijecnici:");
-foreach (var l in await db.Lijecnici.AsNoTracking().ToListAsync())
-    Console.WriteLine($"  {l}");
+var neprimijenjene = (await db.Database.GetPendingMigrationsAsync()).ToList();
+if (neprimijenjene.Count > 0)
+{
+    AnsiConsole.MarkupLine($"[yellow]Neprimijenjene migracije: {string.Join(", ", neprimijenjene)}[/]");
+    if (AnsiConsole.Confirm("Primijeniti sada?"))
+        await db.Database.MigrateAsync();
+    else
+        return 1;
+}
+
+await SeedPodataka.PokreniAsync(db);
+
+await new GlavniIzbornik(config, db).PokreniAsync();
+
+AnsiConsole.MarkupLine("[grey]Dovidenja.[/]");
+return 0;
