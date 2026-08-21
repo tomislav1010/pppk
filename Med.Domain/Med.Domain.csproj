@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.30" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Med.ORM\Med.ORM.csproj" />
   </ItemGroup>
 
