@@ -1,0 +1,18 @@
+[project]
+name = "aves-pipeline"
+version = "0.1.0"
+description = "Pipeline za obradu podataka o opazanjima i taksonomiji ptica"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "snakemake>=8.20",
+    "pymongo>=4.8",
+    "requests>=2.32",
+    "python-dotenv>=1.0",
+    "minio>=7.2",
+    "kafka-python-ng>=2.2",
+    "rapidfuzz>=3.9",
+    "pandas>=2.2",
+]
+
+[tool.uv]
+package = false

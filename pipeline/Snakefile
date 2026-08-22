@@ -1,0 +1,15 @@
+configfile: "config.yaml"
+
+IZLAZ = config["izlaz"]
+
+
+rule sve:
+    input:
+        f"{IZLAZ}/taksonomija.json",
+
+
+rule taksonomija:
+    output:
+        f"{IZLAZ}/taksonomija.json",
+    script:
+        "skripte/taksonomija.py"

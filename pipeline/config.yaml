@@ -1,0 +1,24 @@
+izvori:
+  taksonomija_url: "https://aves.regoch.net/aves.json"
+  klasifikacija_url: "https://aves.regoch.net/api/classify"
+
+mongo:
+  host: "localhost"
+  port: 27017
+  baza: "aves"
+  kolekcije:
+    taksonomija: "taksonomija"
+    opazanja: "opazanja"
+    datoteke: "datoteke"
+    klasifikacije: "klasifikacije"
+
+minio:
+  endpoint: "localhost:9000"
+  spremnik_audio: "audio"
+  spremnik_logovi: "logovi"
+
+kafka:
+  bootstrap: "localhost:9092"
+  tema: "opazanja"
+
+izlaz: "rezultati"
