@@ -17,6 +17,23 @@ minio:
   spremnik_audio: "audio"
   spremnik_logovi: "logovi"
 
+audio:
+  direktorij: "audio"
+  nastavci: [".wav", ".mp3", ".ogg", ".flac"]
+  # Sve datoteke u istoj mapi dijele jedan geografski polozaj.
+  lokacije:
+    maksimir:
+      naziv: "Park Maksimir, Zagreb"
+      sirina: 45.8258
+      duzina: 16.0197
+    kopacki-rit:
+      naziv: "Kopacki rit"
+      sirina: 45.6167
+      duzina: 18.8500
+
+klasifikacija:
+  prag_pouzdanosti: 0.25
+
 kafka:
   bootstrap: "localhost:9092"
   tema: "opazanja"

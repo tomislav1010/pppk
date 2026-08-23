@@ -4,9 +4,11 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from minio import Minio
 from pymongo import MongoClient
 
 KORIJEN = Path(__file__).resolve().parents[2]
+PIPELINE = Path(__file__).resolve().parents[1]
 
 
 def ucitaj_okolinu() -> None:
@@ -34,6 +36,24 @@ def mongo_baza(config: dict):
 
 def kolekcija(config: dict, naziv: str):
     return mongo_baza(config)[config["mongo"]["kolekcije"][naziv]]
+
+
+def minio_klijent(config: dict) -> Minio:
+    ucitaj_okolinu()
+
+    return Minio(
+        config["minio"]["endpoint"],
+        access_key=os.getenv("MINIO_USER", "minioadmin"),
+        secret_key=os.getenv("MINIO_PASSWORD", "minioadmin"),
+        secure=False,
+    )
+
+
+def osiguraj_spremnik(klijent: Minio, naziv: str) -> str:
+    if not klijent.bucket_exists(naziv):
+        klijent.make_bucket(naziv)
+        print(f"Stvoren MinIO spremnik '{naziv}'.")
+    return naziv
 
 
 def osiguraj_direktorij(putanja: str | Path) -> Path:

@@ -6,6 +6,8 @@ IZLAZ = config["izlaz"]
 rule sve:
     input:
         f"{IZLAZ}/taksonomija.json",
+        f"{IZLAZ}/datoteke.json",
+        f"{IZLAZ}/klasifikacija.json",
 
 
 rule taksonomija:
@@ -13,3 +15,20 @@ rule taksonomija:
         f"{IZLAZ}/taksonomija.json",
     script:
         "skripte/taksonomija.py"
+
+
+rule datoteke:
+    output:
+        f"{IZLAZ}/datoteke.json",
+    script:
+        "skripte/datoteke.py"
+
+
+rule klasifikacija:
+    input:
+        f"{IZLAZ}/taksonomija.json",
+        f"{IZLAZ}/datoteke.json",
+    output:
+        f"{IZLAZ}/klasifikacija.json",
+    script:
+        "skripte/klasifikacija.py"
