@@ -69,6 +69,12 @@ jobs:
         working-directory: pipeline
         run: ./.venv/bin/python skripte/pripremi_test_audio.py "${{ inputs.snimaka_po_lokaciji }}"
 
+      # Simulator opazanja bira vrste iz taksonomije i iz vec dobivenih
+      # klasifikacija, pa ta dva koraka moraju proci prije njega.
+      - name: Taksonomija, prijenos i klasifikacija
+        working-directory: pipeline
+        run: ./.venv/bin/snakemake --cores 2 rezultati/klasifikacija.json
+
       - name: Objava opazanja na Kafku
         working-directory: pipeline
         run: ./.venv/bin/python skripte/proizvodac_opazanja.py "${{ inputs.broj_opazanja }}"
