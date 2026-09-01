@@ -37,5 +37,12 @@ klasifikacija:
 kafka:
   bootstrap: "localhost:9092"
   tema: "opazanja"
+  # Broj poruka koje simulator objavi kad se pokrene rucno.
+  simulirano_poruka: 60
+
+izvjestaj:
+  # Prazno znaci bez filtriranja; postavlja se i preko --config filtar=...
+  filtar: ""
+  fuzzy_prag: 75
 
 izlaz: "rezultati"

@@ -12,6 +12,7 @@ dependencies = [
     "kafka-python-ng>=2.2",
     "rapidfuzz>=3.9",
     "pandas>=2.2",
+    "matplotlib>=3.9",
 ]
 
 [tool.uv]

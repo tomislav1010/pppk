@@ -1,0 +1,114 @@
+name: Aves pipeline
+
+# Rucno okidanje, s opcionalnim parametrima izvodenja.
+on:
+  workflow_dispatch:
+    inputs:
+      filtar:
+        description: "Fuzzy filtar po nazivu vrste (prazno = bez filtriranja)"
+        required: false
+        default: ""
+        type: string
+      fuzzy_prag:
+        description: "Prag fuzzy podudaranja (0-100)"
+        required: false
+        default: "75"
+        type: string
+      broj_opazanja:
+        description: "Broj simuliranih opazanja koja se objave na Kafku"
+        required: false
+        default: "60"
+        type: string
+      snimaka_po_lokaciji:
+        description: "Broj testnih audio zapisa po lokaciji"
+        required: false
+        default: "3"
+        type: string
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Dohvat repozitorija
+        uses: actions/checkout@v4
+
+      - name: Dizanje servisa
+        run: |
+          docker compose up -d mongo minio kafka
+          docker compose ps
+
+      - name: Cekanje na servise
+        run: |
+          for i in $(seq 1 40); do
+            mongo=$(docker inspect -f '{{.State.Health.Status}}' adpc-mongo 2>/dev/null || echo none)
+            minio=$(docker inspect -f '{{.State.Health.Status}}' adpc-minio 2>/dev/null || echo none)
+            if [ "$mongo" = "healthy" ] && [ "$minio" = "healthy" ]; then
+              echo "mongo i minio spremni"
+              break
+            fi
+            sleep 5
+          done
+          docker exec adpc-kafka /opt/kafka/bin/kafka-broker-api-versions.sh \
+            --bootstrap-server localhost:9092 > /dev/null
+          echo "kafka spremna"
+
+      - name: Instalacija uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Instalacija ovisnosti
+        working-directory: pipeline
+        run: |
+          uv venv .venv --python 3.12
+          VIRTUAL_ENV="$PWD/.venv" uv pip install -r pyproject.toml
+
+      - name: Priprema testnih snimaka
+        working-directory: pipeline
+        run: ./.venv/bin/python skripte/pripremi_test_audio.py "${{ inputs.snimaka_po_lokaciji }}"
+
+      - name: Objava opazanja na Kafku
+        working-directory: pipeline
+        run: ./.venv/bin/python skripte/proizvodac_opazanja.py "${{ inputs.broj_opazanja }}"
+
+      - name: Pokretanje pipelinea
+        working-directory: pipeline
+        run: |
+          ./.venv/bin/snakemake --cores 2 \
+            --config filtar="${{ inputs.filtar }}" fuzzy_prag="${{ inputs.fuzzy_prag }}"
+
+      - name: Sazetak
+        if: always()
+        working-directory: pipeline
+        run: |
+          {
+            echo "## Rezultati pipelinea"
+            echo
+            for f in rezultati/*.json; do
+              [ -e "$f" ] || continue
+              echo "### $(basename "$f")"
+              echo '```json'
+              cat "$f"
+              echo '```'
+            done
+            if [ -f rezultati/vrste.csv ]; then
+              echo "### vrste.csv"
+              echo '```'
+              head -20 rezultati/vrste.csv
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Spremanje rezultata
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rezultati
+          path: pipeline/rezultati/
+          if-no-files-found: warn
+
+      - name: Gasenje servisa
+        if: always()
+        run: docker compose down -v

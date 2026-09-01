@@ -16,7 +16,7 @@ public static class Baza
             .AddJsonFile("appsettings.json", optional: false)
             .AddJsonFile("appsettings.Local.json", optional: true)
             .Build();
-
+    
     public static string NazivKonfiguracije(IConfiguration config) =>
         config["UseConnection"] ?? "Postgres";
 

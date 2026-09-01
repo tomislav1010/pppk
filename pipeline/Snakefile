@@ -3,11 +3,27 @@ configfile: "config.yaml"
 IZLAZ = config["izlaz"]
 
 
+# Jedna ulazna tocka za cijeli pipeline.
+#
+#   snakemake --cores 1
+#   snakemake --cores 1 --config filtar="cisticola"
+#   snakemake --cores 1 --config filtar="Notharchus" fuzzy_prag=85
+#
+# Vrijednosti zadane preko --config nadjacavaju config.yaml.
+if "filtar" in config:
+    config["izvjestaj"]["filtar"] = config["filtar"]
+if "fuzzy_prag" in config:
+    config["izvjestaj"]["fuzzy_prag"] = int(config["fuzzy_prag"])
+
+
 rule sve:
     input:
         f"{IZLAZ}/taksonomija.json",
         f"{IZLAZ}/datoteke.json",
         f"{IZLAZ}/klasifikacija.json",
+        f"{IZLAZ}/opazanja.json",
+        f"{IZLAZ}/izvjestaj.json",
+        f"{IZLAZ}/vizualizacija.json",
 
 
 rule taksonomija:
@@ -32,3 +48,33 @@ rule klasifikacija:
         f"{IZLAZ}/klasifikacija.json",
     script:
         "skripte/klasifikacija.py"
+
+
+rule opazanja:
+    input:
+        f"{IZLAZ}/taksonomija.json",
+    output:
+        f"{IZLAZ}/opazanja.json",
+    script:
+        "skripte/opazanja.py"
+
+
+rule izvjestaj:
+    input:
+        f"{IZLAZ}/klasifikacija.json",
+        f"{IZLAZ}/opazanja.json",
+    output:
+        f"{IZLAZ}/vrste.csv",
+        f"{IZLAZ}/izvjestaj.json",
+    script:
+        "skripte/izvjestaj.py"
+
+
+rule vizualizacija:
+    input:
+        f"{IZLAZ}/vrste.csv",
+    output:
+        f"{IZLAZ}/vrste.png",
+        f"{IZLAZ}/vizualizacija.json",
+    script:
+        "skripte/vizualizacija.py"
