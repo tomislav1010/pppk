@@ -4,8 +4,10 @@ Projektni zadatak iz kolegija **Pristup podacima iz programskog koda** (Algebra)
 
 Repozitorij sadrži dva neovisna projekta koji dijele samo `docker-compose.yml` i `.env`:
 
-| **Projekt 1** — `Med.*` | Medicinski sustav nad PostgreSQL bazom, C# konzolna aplikacija, code-first, EF Core 
-| **Projekt 2** — `pipeline/` | Pipeline za taksonomiju i opažanja ptica, Python + Snakemake, MongoDB, MinIO, Kafka 
+| Projekt | Sadržaj | Ishodi |
+|---|---|---|
+| **Projekt 1** — `Med.*` | Medicinski sustav nad PostgreSQL bazom, C# konzolna aplikacija, code-first, EF Core | 1, 4, 5 |
+| **Projekt 2** — `pipeline/` | Pipeline za taksonomiju i opažanja ptica, Python + Snakemake, MongoDB, MinIO, Kafka | 2, 3 |
 
 ---
 
