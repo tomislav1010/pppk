@@ -33,6 +33,7 @@ public class PacijentKonfiguracija : IEntityTypeConfiguration<Pacijent>
         b.Property(x => x.DatumRodenja).HasColumnName("datum_rodenja")
             .HasColumnType("timestamp without time zone").IsRequired();
         b.Property(x => x.Spol).HasColumnName("spol").HasColumnType("char(1)").IsRequired();
+        b.Property(x => x.Telefon).HasColumnName("telefon").HasColumnType("varchar(20)");
         b.Property(x => x.AdresaBoravistaId).HasColumnName("adresa_boravista_id").IsRequired();
         b.Property(x => x.AdresaPrebivalistaId).HasColumnName("adresa_prebivalista_id");
         b.Property(x => x.KreiranoNa).HasColumnName("kreirano_na")

@@ -37,6 +37,7 @@ public class KartonPrikaz
         osnovno.AddRow("OIB", p.Oib);
         osnovno.AddRow("Datum rodenja", p.DatumRodenja.ToString("dd.MM.yyyy"));
         osnovno.AddRow("Spol", p.Spol.ToString());
+        osnovno.AddRow("Telefon", p.Telefon ?? "-");
         osnovno.AddRow("Adresa boravista", p.AdresaBoravista?.ToString() ?? "-");
         osnovno.AddRow("Adresa prebivalista", p.AdresaPrebivalista?.ToString() ?? "(isto kao boraviste)");
         osnovno.AddRow("U evidenciji od", p.KreiranoNa.ToLocalTime().ToString("dd.MM.yyyy HH:mm"));

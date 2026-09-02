@@ -23,6 +23,9 @@ public class Pacijent
     [Column("spol", Type = SqlType.Char, Length = 1), NotNull]
     public char Spol { get; set; }
 
+    [Column("telefon", Type = SqlType.Varchar, Length = 20)]
+    public string? Telefon { get; set; }
+
     [Column("adresa_boravista_id"), NotNull, ForeignKey(typeof(Adresa))]
     public int AdresaBoravistaId { get; set; }
 

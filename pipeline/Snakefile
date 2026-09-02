@@ -1,3 +1,5 @@
+import re
+
 configfile: "config.yaml"
 
 IZLAZ = config["izlaz"]
@@ -16,14 +18,37 @@ if "fuzzy_prag" in config:
     config["izvjestaj"]["fuzzy_prag"] = int(config["fuzzy_prag"])
 
 
+def nastavak_izvjestaja():
+    """Filtrirani izvjestaj dobiva vlastito ime.
+
+    Bez ovoga bi pokretanje s filtrom prepisalo glavni izvjestaj, pa bi
+    rezultati/vrste.csv sadrzavao samo suzeni skup dok se pipeline ne pokrene
+    ponovno bez filtra.
+    """
+    filtar = str(config["izvjestaj"].get("filtar") or "").strip()
+    if not filtar:
+        return ""
+
+    oznaka = re.sub(r"[^A-Za-z0-9]+", "-", filtar).strip("-").lower()
+    return f"_{oznaka}" if oznaka else ""
+
+
+NASTAVAK = nastavak_izvjestaja()
+
+CSV = f"{IZLAZ}/vrste{NASTAVAK}.csv"
+SLIKA = f"{IZLAZ}/vrste{NASTAVAK}.png"
+IZVJESTAJ = f"{IZLAZ}/izvjestaj{NASTAVAK}.json"
+VIZUALIZACIJA = f"{IZLAZ}/vizualizacija{NASTAVAK}.json"
+
+
 rule sve:
     input:
         f"{IZLAZ}/taksonomija.json",
         f"{IZLAZ}/datoteke.json",
         f"{IZLAZ}/klasifikacija.json",
         f"{IZLAZ}/opazanja.json",
-        f"{IZLAZ}/izvjestaj.json",
-        f"{IZLAZ}/vizualizacija.json",
+        IZVJESTAJ,
+        VIZUALIZACIJA,
 
 
 rule taksonomija:
@@ -64,17 +89,32 @@ rule izvjestaj:
         f"{IZLAZ}/klasifikacija.json",
         f"{IZLAZ}/opazanja.json",
     output:
-        f"{IZLAZ}/vrste.csv",
-        f"{IZLAZ}/izvjestaj.json",
+        CSV,
+        IZVJESTAJ,
     script:
         "skripte/izvjestaj.py"
 
 
 rule vizualizacija:
     input:
-        f"{IZLAZ}/vrste.csv",
+        CSV,
     output:
-        f"{IZLAZ}/vrste.png",
-        f"{IZLAZ}/vizualizacija.json",
+        SLIKA,
+        VIZUALIZACIJA,
     script:
         "skripte/vizualizacija.py"
+
+
+# Brise sve izlaze pipelinea, da sljedece pokretanje krene ispocetka.
+# Podaci u MongoDB i MinIO ostaju - njih se cisti zasebno.
+rule ocisti:
+    run:
+        import shutil
+        from pathlib import Path
+
+        putanja = Path(IZLAZ)
+        if putanja.exists():
+            shutil.rmtree(putanja)
+            print(f"Obrisano: {putanja}")
+        else:
+            print(f"Nema sto brisati u {putanja}.")

@@ -93,7 +93,8 @@ public class PacijentIzbornik
             Prezime = Ui.Tekst("Prezime:"),
             Oib = Ui.Tekst("OIB:"),
             DatumRodenja = Ui.Datum("Datum rodenja:"),
-            Spol = Ui.Odaberi("Spol:", new[] { 'M', 'Z' }, x => x.ToString())
+            Spol = Ui.Odaberi("Spol:", new[] { 'M', 'Z' }, x => x.ToString()),
+            Telefon = Ui.TekstOpcionalno("Telefon:")
         };
 
         var greska = PacijentService.ValidirajOib(pacijent.Oib);
@@ -142,6 +143,7 @@ public class PacijentIzbornik
         pacijent.Oib = Ui.Tekst("OIB:", pacijent.Oib);
         pacijent.DatumRodenja = Ui.Datum("Datum rodenja:", pacijent.DatumRodenja);
         pacijent.Spol = Ui.Odaberi("Spol:", new[] { 'M', 'Z' }, x => x.ToString());
+        pacijent.Telefon = Ui.TekstOpcionalno("Telefon:", pacijent.Telefon);
 
         var (uspjeh, poruka) = await _pacijenti.AzurirajAsync(pacijent);
         if (uspjeh) Ui.Uspjeh(poruka); else Ui.Greska(poruka);

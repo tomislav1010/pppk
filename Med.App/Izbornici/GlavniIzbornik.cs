@@ -33,6 +33,7 @@ public class GlavniIzbornik
         var sifrarnikIzbornik = new SifrarnikIzbornik(sifrarnik);
         var karton = new KartonPrikaz(pacijenti, odabir);
         var demo = new UcitavanjeDemo(_config);
+        var migracije = new MigracijeInfo(_db);
 
         while (true)
         {
@@ -47,6 +48,7 @@ public class GlavniIzbornik
                 "Sifrarnici",
                 "Puni karton pacijenta",
                 "Eager vs lazy loading",
+                "Stanje migracija",
                 "Ucitaj demo podatke",
                 "Izlaz"
             }, x => x);
@@ -60,6 +62,7 @@ public class GlavniIzbornik
                 case "Sifrarnici": await sifrarnikIzbornik.PokreniAsync(); break;
                 case "Puni karton pacijenta": await karton.PokreniAsync(); break;
                 case "Eager vs lazy loading": await demo.PokreniAsync(); break;
+                case "Stanje migracija": await migracije.PokreniAsync(); break;
                 case "Ucitaj demo podatke": await DemoAsync(); break;
                 default: return;
             }
